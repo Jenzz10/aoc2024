@@ -55,38 +55,4 @@ public class Main2 {
         }
 
     }
-
-    private static int checkNorthWest(char[][] grid, int row, int column, char c) {
-        if(row < 3 || column < 3){
-            return 0;
-        }
-        return "XMAS".equals(testXMAS(grid[row][column], grid[row - 1][column - 1],grid[row - 2][column - 2], grid[row - 3][column - 3 ])) ? 1 : 0;
-    }
-
-    private static int checkSouthWest(char[][] grid, int row, int column, char c) {
-        if(row > (MAX -4) || column < 3){
-            return 0;
-        }
-        return "XMAS".equals(testXMAS(grid[row][column], grid[row + 1][column - 1],grid[row + 2][column - 2], grid[row + 3][column - 3 ])) ? 1 : 0;
-
-    }
-
-    private static int checkSouthEast(char[][] grid, int row, int column, char c) {
-        if(row > (MAX - 4) || column > (MAX - 4)){
-            return 0;
-        }
-        return "XMAS".equals(testXMAS(grid[row][column], grid[row + 1][column + 1],grid[row + 2][column + 2], grid[row + 3][column + 3 ])) ? 1 : 0;
-    }
-
-    private static int checkNorthEast(char[][] grid, int row, int column, char c) {
-        if(row < 3 || column > (MAX - 4)){
-            return 0;
-        }
-        return "XMAS".equals(testXMAS(grid[row][column], grid[row - 1][column + 1],grid[row - 2][column + 2], grid[row - 3][column + 3 ])) ? 1 : 0;
-
-    }
-    private static String testXMAS(char X, char M, char A, char S){
-        char[] test = new char[]{X,M,A,S};
-        return String.valueOf(test);
-    }
 }
