@@ -100,5 +100,3 @@ public class Main2_alt {
     }
 
 }
-
-record tester(boolean ok, int failedLine) { }

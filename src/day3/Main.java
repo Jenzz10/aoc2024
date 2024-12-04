@@ -18,11 +18,8 @@ public class Main {
             reader = new BufferedReader(new FileReader("/Users/jens.steppe/Projects/aoc/AoC/src/day3/control.txt"));
             String line = reader.readLine();
 
-
-
             List<String> allMatches = new ArrayList<String>();
             while (line != null) {
-                ///String[] split = line.split("(mul\\\\(\\d*,\\d*\\\\))");
                 Matcher m = Pattern.compile("(mul\\(\\d*,\\d*\\))")
                         .matcher(line);
                 while (m.find()) {
@@ -36,9 +33,7 @@ public class Main {
                 String[] m = r.split(",");
                 total += Integer.parseInt(m[0]) * Integer.parseInt(m[1]);
             }
-
-
-
+            
             System.out.println("TOTAL :::::");
             System.out.println(total);
             reader.close();
