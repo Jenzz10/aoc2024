@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class Main2 {
-    static int MAX = 140;
-
     public static void main(String[] args) {
         int total = 0;
 
@@ -35,18 +33,15 @@ public class Main2 {
                 String[] lineArray = line.split(",");
 
                 if (!isLineCorrect(lineArray, order)) {
+                    //lazy approach. The correctLine function works good enough to fix it in 1 or 2 attempts.
                     while(!isLineCorrect(lineArray, order)){
                         lineArray = correctLine(lineArray, order);
                     }
-                    System.out.println("Line corrected " + Arrays.asList(lineArray));
                     String middle = lineArray[Math.abs((lineArray.length) / 2)];
                     total += Integer.parseInt(middle);
                 }
                 line = reader.readLine();
             }
-
-            System.out.println(order);
-
             System.out.println("TOTAL :::::");
             System.out.println(total);
             reader.close();
@@ -57,7 +52,6 @@ public class Main2 {
     }
 
     public static String[] correctLine(String[] lineArray, Map<String, List<String>> order) {
-        boolean lineIsCorrect = true;
         List<String> pastNumbers = new ArrayList<>();
         pastNumbers.add(lineArray[0]);
         for (int i = 1; i < lineArray.length; i++) {
