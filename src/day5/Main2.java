@@ -7,6 +7,7 @@ import java.util.*;
 
 public class Main2 {
     public static void main(String[] args) {
+        long start = System.currentTimeMillis();
         int total = 0;
 
         BufferedReader reader;
@@ -44,7 +45,9 @@ public class Main2 {
             }
             System.out.println("TOTAL :::::");
             System.out.println(total);
+            System.out.println((System.currentTimeMillis() - start) + "ms" );
             reader.close();
+
         } catch (
                 IOException e) {
             e.printStackTrace();
