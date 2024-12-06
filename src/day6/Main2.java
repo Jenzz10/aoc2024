@@ -28,8 +28,6 @@ public class Main2 {
         int currentX = positionAndMap.x;
         int currentY = positionAndMap.y;
 
-        boolean startedTurning = false;
-
 
         while (!outOfMap) {
             Step item = takeStep(direction, map, currentX, currentY);
@@ -74,7 +72,7 @@ public class Main2 {
         return totalCircles;
     }
 
-    private static int searchPattern(char[][] map, String direction, int currentX, int currentY) {
+    private static int searchPattern(char[][] map, String originalDirection, int currentX, int currentY) {
         int numberOfPatternsFound = 0;
         int startX = currentX;
         int startY = currentY;
@@ -83,47 +81,111 @@ public class Main2 {
         //start searching to the right.
 
         boolean anyMoreDirectionsToCheck = true;
-        String currentDirection = changeDirection(direction);
+        String currentDirection = changeDirection(originalDirection);
+        String directionBeforePlacingObstruction = "";
+        int numberOfTimesFallenOfMap = 0;
 
         while (anyMoreDirectionsToCheck) {
-
+            int nextXToStart = startX;
+            int nextYToStart = startY;
             boolean obstructionPlaced = false;
-            while(true) {
-                Step s = takeStep(currentDirection, map, startX + stepsTakenInDirection, currentY);
-                if(!obstructionPlaced && !hasObstacleNext(map, currentX, currentY, currentDirection)){
-                    changeDirection(currentDirection);
+            while (true) {
+                //check currentX & currentY;
+                Step s = takeStep(currentDirection, map, currentX, currentY);
+                countSteps(currentDirection);
+                if (!obstructionPlaced && !hasObstacleNext(map, currentX, currentY, currentDirection)) {
+                    directionBeforePlacingObstruction = currentDirection;
+                    currentDirection = changeDirection(currentDirection);
                     obstructionPlaced = true;
                 }
                 if (s == null) {
-                    //we have already place an obstruction,
-                    if(obstructionPlaced)
-                        anyMoreDirectionsToCheck = false;
-                }
-                if (s.object == '.' || s.object == '^') {
-                    countSteps(direction);
-                    currentX = s.x;
-                    currentY = s.y;
-                }
+                    if (!obstructionPlaced)
+                        numberOfTimesFallenOfMap++;
 
-                if (s.object == '#') {
-                    if (currentX == startX && currentY == startY) {
-                        numberOfPatternsFound++;
-                        break;
+                    if (numberOfTimesFallenOfMap == 2) {
+                        anyMoreDirectionsToCheck = false;
+                    }else{
+                        //reset and continue searching
+                        if(directionBeforePlacingObstruction == "right"){
+                            nextYToStart += 1;
+                            currentX = nextXToStart ;
+                            currentY = nextYToStart;
+                            currentDirection = directionBeforePlacingObstruction;
+                            resetSteps();
+                        }
+                        if(directionBeforePlacingObstruction == "down"){
+                            nextXToStart += 1;
+                            currentX = nextXToStart ;
+                            currentY = nextYToStart;
+                            currentDirection = directionBeforePlacingObstruction;
+                            resetSteps();
+                        }
+                        if(directionBeforePlacingObstruction == "up"){
+                            nextXToStart -= 1;
+                            currentX = nextXToStart ;
+                            currentY = nextYToStart;
+                            currentDirection = directionBeforePlacingObstruction;
+                            resetSteps();
+                            //remember position
+                        }
+                        if(directionBeforePlacingObstruction == "left"){
+                            nextYToStart -= 1;
+                            currentX = nextXToStart ;
+                            currentY = nextYToStart;
+                            currentDirection = directionBeforePlacingObstruction;
+                            resetSteps();
+                            //remember position
+                        }
+                        obstructionPlaced = false;
                     }
-                    direction = changeDirection(direction);
-                    directionChanges++;
-                    //He does not retun home after an obstruction is placed. So continue search.
-                    if (directionChanges > 3) {
-                        break;
+                } else {
+                    if (s.object == '.' || s.object == '^') {
+                        currentX = s.x;
+                        currentY = s.y;
+                    }
+
+                    if (s.object == '#') {
+                        if (currentX == startX && currentY == startY) {
+                            numberOfPatternsFound++;
+                            break;
+                        }
+                        currentDirection = changeDirection(currentDirection);
+                        directionChanges++;
+                        //He does not retun home after an obstruction is placed. So continue search.
+                        if (directionChanges > 3) {
+                            Search search = resetSearchPattern(directionBeforePlacingObstruction, nextYToStart, nextXToStart);
+                            currentDirection = directionBeforePlacingObstruction;
+                            nextYToStart = search.nextY();
+                            nextXToStart = search.nextX();
+                            currentX = nextXToStart ;
+                            currentY = nextYToStart;
+                            obstructionPlaced = false;
+                            directionChanges = 1;
+                        }
                     }
                 }
             }
 
 
-
-
         }
         return 0;
+    }
+
+    public static Search resetSearchPattern(String directionBeforePlacingObstruction, int nextYToStart, int nextXToStart){
+        if(directionBeforePlacingObstruction == "right"){
+            nextYToStart += 1;
+        }
+        if(directionBeforePlacingObstruction == "down"){
+            nextXToStart += 1;
+        }
+        if(directionBeforePlacingObstruction == "up"){
+            nextXToStart -= 1;
+        }
+        if(directionBeforePlacingObstruction == "left"){
+            nextYToStart -= 1;
+        }
+        resetSteps();
+        Search s = new Search(nextXToStart, nextYToStart);
     }
 
     private static void countSteps(String direction) {
@@ -139,6 +201,13 @@ public class Main2 {
         if (direction == "left") {
             stepsLeft++;
         }
+    }
+
+    public static void resetSteps(){
+        stepsRight =0;
+        stepsUp = 0;
+        stepsDown = 0;
+        stepsLeft = 0;
     }
 
 
@@ -158,18 +227,18 @@ public class Main2 {
         return null;
     }
 
-    private static boolean hasObstacleNext(char[][] map, int x, int y, String direction){
-        if(direction.equals("up")){
-           return map[x + 1][y] == '#';
-        }
-        if(direction.equals("down")){
+    private static boolean hasObstacleNext(char[][] map, int x, int y, String direction) {
+        if (direction.equals("up")) {
             return map[x - 1][y] == '#';
         }
-        if(direction.equals("right")){
-            return map[x][y+1] == '#';
+        if (direction.equals("down")) {
+            return map[x + 1][y] == '#';
         }
-        if(direction.equals("left")){
-            return map[x][y-1] == '#';
+        if (direction.equals("right")) {
+            return map[x][y + 1] == '#';
+        }
+        if (direction.equals("left")) {
+            return map[x][y - 1] == '#';
         }
         return false;
     }
@@ -247,6 +316,8 @@ public class Main2 {
 
     record Step(char object, int x, int y) {
     }
+
+    record Search(int nextX, int nextY){}
 
 }
 
