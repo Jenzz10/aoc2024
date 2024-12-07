@@ -7,21 +7,20 @@ import java.io.IOException;
 import java.util.*;
 
 public class Main3 {
-    static int GRIDSIZE = 130;
-    static String file = "src/day6/input.txt";
-    static Set<coordination> blocks = new HashSet<>();
+    static int GRIDSIZE = 10;
+    static String file = "src/day6/test.txt";
+    static Set<guidedCoordination> blocks = new HashSet<>();
     static int steps = 0;
 
     public static void main(String[] args) {
         PositionAndMap position = initiateMap();
         double start = System.nanoTime();
-        startWalking(position);
+        System.out.println(startWalking(position));
         double end = System.nanoTime();
 
-        // System.out.println();
         System.out.println((end - start) + " nano seconds or " + (end - start) / 1000000 + "ms");
 
-        System.out.println(blocks);
+        //System.out.println(blocks);
         System.out.println(blocks.size());
     }
 
@@ -33,45 +32,49 @@ public class Main3 {
         int currentX = positionAndMap.x;
         int currentY = positionAndMap.y;
         while (!outOfMap) {
-            Step item = takeStep(direction, map, currentX, currentY);
+            Step step = takeStep(direction, map, currentX, currentY);
 
             //Guard fallen of map
-            if (item == null) {
+            if (step == null) {
                 System.out.println(currentX + " " + currentY + " " + direction);
                 outOfMap = true;
                 break;
             }
-            coordination c = null;
-            if (item.object != '#') {
-                c = checkLoop(new PositionAndMap(map, currentX, currentY), new coordination(item.x, item.y), changeDirection(direction), direction);
+
+            guidedCoordination c = null;
+
+            if (step.object != '#') {
+                c = checkLoop(new PositionAndMap(map, currentX, currentY), new guidedCoordination(step.x, step.y, direction), changeDirection(direction));
             }
+
             if (c != null) {
                 blocks.add(c);
                 total++;
             }
 
-            if (item.object != '#') {
-                currentX = item.x;
-                currentY = item.y;
+            if (step.object != '#') {
+                currentX = step.x;
+                currentY = step.y;
                 steps++;
                 if (steps % 10 == 0)
                     System.out.println(steps);
             }
-            //rotate direction, keep x,y
-            if (item.object == '#') {
+
+            if (step.object == '#') {
                 direction = changeDirection(direction);
             }
         }
         return total;
     }
 
-    public static coordination checkLoop(PositionAndMap positionAndMap, coordination TopLeft, String direction, String previousDirection) {
+    public static guidedCoordination checkLoop(PositionAndMap positionAndMap, guidedCoordination guard, String direction) {
 
         char[][] map = positionAndMap.map;
         int currentX = positionAndMap.x;
         int currentY = positionAndMap.y;
-        List<guidedCoordination> seen = new ArrayList<>();
-        seen.add(new guidedCoordination(TopLeft.x, TopLeft.y, previousDirection));
+
+        List<guidedCoordination> alreadySeenGuards = new ArrayList<>();
+       // alreadySeenGuards.add(guard);
 
         while (true) {
             Step item = takeStep(direction, map, currentX, currentY);
@@ -79,18 +82,27 @@ public class Main3 {
             if (item == null) {
                 return null;
             }
+            if (alreadySeenGuards.contains(new guidedCoordination(item.x, item.y, direction))) {
+                return guard;
+            }
+            alreadySeenGuards.add(new guidedCoordination(item.x, item.y, direction));
+
             if (item.object != '#') {
                 currentX = item.x;
                 currentY = item.y;
             }
 
-            if (seen.contains(new guidedCoordination(item.x, item.y, direction))) {
-                    return TopLeft;
-            }
+            //If we come across the placed guard in the same direction, we are in a loop.
+           /* if (guard.equals(new guidedCoordination(item.x, item.y, direction))) {
+                return guard;
+            }*/
 
-            //rotate direction, keep x,y
             if (item.object == '#') {
-                seen.add(new guidedCoordination(item.x, item.y, direction));
+                //if we see a coordinate again in the same direction, we are in a loop.
+               /* if (alreadySeenGuards.contains(new guidedCoordination(item.x, item.y, direction))) {
+                    return guard;
+                }*/
+                alreadySeenGuards.add(new guidedCoordination(item.x, item.y, direction));
                 direction = changeDirection(direction);
             }
         }

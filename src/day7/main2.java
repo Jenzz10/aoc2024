@@ -10,14 +10,11 @@ import java.util.List;
 
 public class main2 {
 
-
-    public static List<Long> possibleAnswer = new ArrayList<>();
     public static void main(String[] args) {
         long start = System.nanoTime();
         System.out.println(solve());
         long end = System.nanoTime();
         System.out.println((end - start) / 1000000 );
-
     }
 
 
@@ -53,7 +50,7 @@ public class main2 {
         if(i == remaining.size() || value > sum){
             return value == sum;
         }
-
+        System.out.println(value);
         return recursion(i+1, remaining, value + remaining.get(i), sum)
                 || recursion(i+1, remaining, value * remaining.get(i), sum)
                 || recursion(i+1, remaining, Long.parseLong(value +""+remaining.get(i)), sum);

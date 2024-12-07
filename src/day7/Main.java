@@ -26,7 +26,7 @@ public class Main {
         long total = 0;
         BufferedReader reader;
         try {
-            reader = new BufferedReader(new FileReader("src/day7/input.txt"));
+            reader = new BufferedReader(new FileReader("src/day7/test.txt"));
             String line = reader.readLine();
 
             while (line != null) {
@@ -54,7 +54,6 @@ public class Main {
         if(i == remaining.size() || value > sum){
             return value == sum;
         }
-
         return recursion(i+1, remaining, value + remaining.get(i), sum)
                 || recursion(i+1, remaining, value * remaining.get(i), sum);
     }

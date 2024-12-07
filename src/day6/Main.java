@@ -15,7 +15,7 @@ public class Main {
 
         //System.out.println("TOTAL");
         double start = System.nanoTime();
-        startWalking(position);
+        System.out.println(startWalking(position));
         double end = System.nanoTime();
         //System.out.println();
         System.out.println((end - start)  + " nano seconds or " + (end-start)/1000000 + "ms");
