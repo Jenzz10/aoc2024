@@ -7,57 +7,59 @@ import java.io.IOException;
 import java.util.*;
 
 public class Main3 {
-    static int GRIDSIZE = 10;
-    static String file = "src/day6/test.txt";
-    static Set<guidedCoordination> blocks = new HashSet<>();
+    static int GRIDSIZE = 140;
+    static String file = "src/day6/input.txt";
+    static Set<point> blocks = new HashSet<>();
     static int steps = 0;
+    static int startX, starty = 0;
 
     public static void main(String[] args) {
         PositionAndMap position = initiateMap();
+        startX = position.x;
+        starty = position.y;
         double start = System.nanoTime();
         System.out.println(startWalking(position));
         double end = System.nanoTime();
 
         System.out.println((end - start) + " nano seconds or " + (end - start) / 1000000 + "ms");
 
-        //System.out.println(blocks);
+        for(var c : blocks){
+            if(c.x == startX && c.y == starty){
+                System.out.println("do -1!");
+            }
+        }
+        System.out.println(blocks);
         System.out.println(blocks.size());
     }
 
     public static int startWalking(PositionAndMap positionAndMap) {
-        boolean outOfMap = false;
         int total = 0;
         String direction = "up";
         char[][] map = positionAndMap.map;
         int currentX = positionAndMap.x;
         int currentY = positionAndMap.y;
-        while (!outOfMap) {
+        while (true) {
             Step step = takeStep(direction, map, currentX, currentY);
 
             //Guard fallen of map
             if (step == null) {
                 System.out.println(currentX + " " + currentY + " " + direction);
-                outOfMap = true;
                 break;
             }
 
-            guidedCoordination c = null;
-
             if (step.object != '#') {
-                c = checkLoop(new PositionAndMap(map, currentX, currentY), new guidedCoordination(step.x, step.y, direction), changeDirection(direction));
-            }
-
-            if (c != null) {
-                blocks.add(c);
-                total++;
+                //temporary mark the position in front of you as a blockage
+                map[step.x][step.y] = '#';
+                if(isLoop(new PositionAndMap(map, currentX, currentY),direction)){
+                    blocks.add(new point(step.x, step.y));
+                    total++;
+                };
+                map[step.x][step.y] = '.';
             }
 
             if (step.object != '#') {
                 currentX = step.x;
                 currentY = step.y;
-                steps++;
-                if (steps % 10 == 0)
-                    System.out.println(steps);
             }
 
             if (step.object == '#') {
@@ -67,42 +69,34 @@ public class Main3 {
         return total;
     }
 
-    public static guidedCoordination checkLoop(PositionAndMap positionAndMap, guidedCoordination guard, String direction) {
+    public static boolean isLoop(PositionAndMap positionAndMap, String direction) {
 
         char[][] map = positionAndMap.map;
         int currentX = positionAndMap.x;
         int currentY = positionAndMap.y;
 
-        List<guidedCoordination> alreadySeenGuards = new ArrayList<>();
-       // alreadySeenGuards.add(guard);
+        List<point> passedTurns = new ArrayList<>();
 
         while (true) {
-            Step item = takeStep(direction, map, currentX, currentY);
-            //Guard fallen of map
-            if (item == null) {
-                return null;
+            //takes a step forward in the current direction. return the information of the step forward.
+            Step step = takeStep(direction, map, currentX, currentY);
+            //Guard falls of map
+            if (step == null) {
+                return false;
             }
-            if (alreadySeenGuards.contains(new guidedCoordination(item.x, item.y, direction))) {
-                return guard;
-            }
-            alreadySeenGuards.add(new guidedCoordination(item.x, item.y, direction));
-
-            if (item.object != '#') {
-                currentX = item.x;
-                currentY = item.y;
+            //step forward is no block, we can go forward.
+            if (step.object != '#') {
+                currentX = step.x;
+                currentY = step.y;
             }
 
-            //If we come across the placed guard in the same direction, we are in a loop.
-           /* if (guard.equals(new guidedCoordination(item.x, item.y, direction))) {
-                return guard;
-            }*/
-
-            if (item.object == '#') {
-                //if we see a coordinate again in the same direction, we are in a loop.
-               /* if (alreadySeenGuards.contains(new guidedCoordination(item.x, item.y, direction))) {
-                    return guard;
-                }*/
-                alreadySeenGuards.add(new guidedCoordination(item.x, item.y, direction));
+            if (step.object == '#') {
+                if(direction == "up") {
+                    if (passedTurns.contains(new point(step.x, step.y))) {
+                        return true;
+                    }
+                    passedTurns.add(new point(step.x, step.y));
+                }
                 direction = changeDirection(direction);
             }
         }
@@ -183,7 +177,7 @@ public class Main3 {
     record Step(char object, int x, int y) {
     }
 
-    record coordination(int x, int y) {
+    record point(int x, int y) {
     }
 
     record guidedCoordination(int x, int y, String direction) {
