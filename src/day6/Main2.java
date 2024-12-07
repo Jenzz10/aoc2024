@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Main2 {
     static int GRIDSIZE = 10;
@@ -12,12 +14,17 @@ public class Main2 {
     static int stepsUp = 0;
     static int stepsDown = 0;
 
+    static Set<coordinate> possibilities = new HashSet<>();
+
     public static void main(String[] args) {
         PositionAndMap position = initiateMap();
         System.out.println("X,Y  (" + position.x() + "," + position.y() + ")");
 
         System.out.println("TOTAL");
         System.out.println(startWalking(position));
+        System.out.println(possibilities);
+        System.out.println(possibilities.size());
+        System.out.println("DONE");
     }
 
     public static int startWalking(PositionAndMap positionAndMap) {
@@ -40,6 +47,7 @@ public class Main2 {
             //We need at least 1 obstacle arround to guard to create a circular pattern.
             String obstacleSide = hasObstacleArroundGuard(map, currentX, currentY);
             if (obstacleSide != null) {
+                System.out.println(totalCircles);
                 totalCircles += searchPattern(map, obstacleSide, currentX, currentY);
             }
 
@@ -68,7 +76,7 @@ public class Main2 {
                 //for debugging
             }
         }
-        printMap(map);
+       // printMap(map);
         return totalCircles;
     }
 
@@ -77,8 +85,8 @@ public class Main2 {
         int startX = currentX;
         int startY = currentY;
         int directionChanges = 1;
-        int stepsTakenInDirection = 0;
         //start searching to the right.
+
 
         boolean anyMoreDirectionsToCheck = true;
         String currentDirection = changeDirection(originalDirection);
@@ -86,18 +94,14 @@ public class Main2 {
         int numberOfTimesFallenOfMap = 0;
 
         while (anyMoreDirectionsToCheck) {
-            int nextXToStart = startX;
-            int nextYToStart = startY;
+            coordinate currentCoordinateOfObstacle = null;
+            int nextXToStart = -1;
+            int nextYToStart = -1;
             boolean obstructionPlaced = false;
             while (true) {
                 //check currentX & currentY;
                 Step s = takeStep(currentDirection, map, currentX, currentY);
                 countSteps(currentDirection);
-                if (!obstructionPlaced && !hasObstacleNext(map, currentX, currentY, currentDirection)) {
-                    directionBeforePlacingObstruction = currentDirection;
-                    currentDirection = changeDirection(currentDirection);
-                    obstructionPlaced = true;
-                }
                 if (s == null) {
                     if (!obstructionPlaced)
                         numberOfTimesFallenOfMap++;
@@ -106,39 +110,30 @@ public class Main2 {
                         anyMoreDirectionsToCheck = false;
                     }else{
                         //reset and continue searching
-                        if(directionBeforePlacingObstruction == "right"){
-                            nextYToStart += 1;
-                            currentX = nextXToStart ;
-                            currentY = nextYToStart;
-                            currentDirection = directionBeforePlacingObstruction;
-                            resetSteps();
+                        if(nextXToStart==-1){
+                            nextXToStart = startX;
+                            nextYToStart = startY;
                         }
-                        if(directionBeforePlacingObstruction == "down"){
-                            nextXToStart += 1;
-                            currentX = nextXToStart ;
-                            currentY = nextYToStart;
-                            currentDirection = directionBeforePlacingObstruction;
-                            resetSteps();
+                        Search search = resetSearchPattern(directionBeforePlacingObstruction, nextYToStart, nextXToStart);
+                        currentDirection = directionBeforePlacingObstruction;
+                        if(search.nextX < 0 || search.nextY < 0){
+                            anyMoreDirectionsToCheck = false;
+                            break;
                         }
-                        if(directionBeforePlacingObstruction == "up"){
-                            nextXToStart -= 1;
-                            currentX = nextXToStart ;
-                            currentY = nextYToStart;
-                            currentDirection = directionBeforePlacingObstruction;
-                            resetSteps();
-                            //remember position
-                        }
-                        if(directionBeforePlacingObstruction == "left"){
-                            nextYToStart -= 1;
-                            currentX = nextXToStart ;
-                            currentY = nextYToStart;
-                            currentDirection = directionBeforePlacingObstruction;
-                            resetSteps();
-                            //remember position
-                        }
+                        nextYToStart = search.nextY();
+                        nextXToStart = search.nextX();
+                        currentX = nextXToStart ;
+                        currentY = nextYToStart;
                         obstructionPlaced = false;
+                        directionChanges = 1;
                     }
                 } else {
+                    if (!obstructionPlaced && hasObstacleNext(map, currentX, currentY, currentDirection) == null) {
+                        currentCoordinateOfObstacle = nextObstacleNext(map, currentX, currentY, currentDirection);
+                        directionBeforePlacingObstruction = currentDirection;
+                        currentDirection = changeDirection(currentDirection);
+                        obstructionPlaced = true;
+                    }
                     if (s.object == '.' || s.object == '^') {
                         currentX = s.x;
                         currentY = s.y;
@@ -146,15 +141,39 @@ public class Main2 {
 
                     if (s.object == '#') {
                         if (currentX == startX && currentY == startY) {
+                            if(nextXToStart==-1){
+                                nextXToStart = startX;
+                                nextYToStart = startY;
+                            }
+                            possibilities.add(currentCoordinateOfObstacle);
                             numberOfPatternsFound++;
-                            break;
+                            Search search = resetSearchPattern(directionBeforePlacingObstruction, nextYToStart, nextXToStart);
+                            currentDirection = directionBeforePlacingObstruction;
+                            if(search.nextX < 0 || search.nextY < 0){
+                                anyMoreDirectionsToCheck = false;
+                                break;
+                            }
+                            nextYToStart = search.nextY();
+                            nextXToStart = search.nextX();
+                            currentX = nextXToStart ;
+                            currentY = nextYToStart;
+                            obstructionPlaced = false;
+                            directionChanges = 1;
                         }
                         currentDirection = changeDirection(currentDirection);
                         directionChanges++;
-                        //He does not retun home after an obstruction is placed. So continue search.
+                        //He does not return home after an obstruction is placed. So continue search.
                         if (directionChanges > 3) {
+                            if(nextXToStart==-1){
+                                nextXToStart = startX;
+                                nextYToStart = startY;
+                            }
                             Search search = resetSearchPattern(directionBeforePlacingObstruction, nextYToStart, nextXToStart);
                             currentDirection = directionBeforePlacingObstruction;
+                            if(search.nextX < 0 || search.nextY < 0){
+                                anyMoreDirectionsToCheck = false;
+                                break;
+                            }
                             nextYToStart = search.nextY();
                             nextXToStart = search.nextX();
                             currentX = nextXToStart ;
@@ -164,11 +183,13 @@ public class Main2 {
                         }
                     }
                 }
+                if(nextYToStart == startY && nextXToStart == startX){
+                    anyMoreDirectionsToCheck = false;
+                    break;
+                }
             }
-
-
         }
-        return 0;
+        return numberOfPatternsFound;
     }
 
     public static Search resetSearchPattern(String directionBeforePlacingObstruction, int nextYToStart, int nextXToStart){
@@ -185,7 +206,7 @@ public class Main2 {
             nextYToStart -= 1;
         }
         resetSteps();
-        Search s = new Search(nextXToStart, nextYToStart);
+        return new Search(nextXToStart, nextYToStart);
     }
 
     private static void countSteps(String direction) {
@@ -210,37 +231,66 @@ public class Main2 {
         stepsLeft = 0;
     }
 
-
     private static String hasObstacleArroundGuard(char[][] map, int x, int y) {
-        if (hasObstacleNext(map, x, y, "up")) {
+        if (hasObstacleNext(map, x, y, "up")!= null) {
             return "up";
         }
-        if (hasObstacleNext(map, x, y, "down")) {
+        if (hasObstacleNext(map, x, y, "down")!= null) {
             return "down";
         }
-        if (hasObstacleNext(map, x, y, "right")) {
+        if (hasObstacleNext(map, x, y, "right")!= null) {
             return "right";
         }
-        if (hasObstacleNext(map, x, y, "left")) {
+        if (hasObstacleNext(map, x, y, "left")!= null) {
             return "left";
         }
         return null;
     }
 
-    private static boolean hasObstacleNext(char[][] map, int x, int y, String direction) {
+    private static coordinate hasObstacleNext(char[][] map, int x, int y, String direction) {
+
         if (direction.equals("up")) {
-            return map[x - 1][y] == '#';
+            if(x <= 0){
+                return null;
+            }
+            return map[x - 1][y] == '#' ? new coordinate(x-1,y) : null;
         }
         if (direction.equals("down")) {
-            return map[x + 1][y] == '#';
+            if(x >= 9){
+                return null;
+            }
+            return map[x + 1][y] == '#' ? new coordinate(x+1,y) : null;
         }
         if (direction.equals("right")) {
-            return map[x][y + 1] == '#';
+            if(y >= 9){
+                return null;
+            }
+            return map[x][y + 1] == '#'? new coordinate(x,y+1) : null;
         }
         if (direction.equals("left")) {
-            return map[x][y - 1] == '#';
+            if(y <= 0){
+                return null;
+            }
+            return map[x][y - 1] == '#'? new coordinate(x,y-1) : null;
         }
-        return false;
+        return null;
+    }
+
+    private static coordinate nextObstacleNext(char[][] map, int x, int y, String direction) {
+
+        if (direction.equals("up")) {
+           return new coordinate(x-1,y) ;
+        }
+        if (direction.equals("down")) {
+            return new coordinate(x+1,y);
+        }
+        if (direction.equals("right")) {
+            return  new coordinate(x,y+1) ;
+        }
+        if (direction.equals("left")) {
+            return new coordinate(x,y-1);
+        }
+        return null;
     }
 
     private static String changeDirection(String direction) {
@@ -318,6 +368,8 @@ public class Main2 {
     }
 
     record Search(int nextX, int nextY){}
+
+    record coordinate(int x, int y){}
 
 }
 
