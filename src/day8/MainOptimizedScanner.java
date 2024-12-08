@@ -19,7 +19,7 @@ public class MainOptimizedScanner {
         String content = new Scanner(new File("src/day8/input.txt")).useDelimiter("\\Z").next();
 
         double start = System.nanoTime();
-        initiateMap(content.split("\n"));
+        findNumberOfAntinodes(content.split("\n"));
         double end = System.nanoTime();
 
         for(int i = 0; i<GRIDSIZE*GRIDSIZE; i++){
@@ -32,7 +32,7 @@ public class MainOptimizedScanner {
         System.out.println("number of antinodes " + o);
     }
 
-    public static void initiateMap(String[] lines) throws IOException {
+    public static void findNumberOfAntinodes(String[] lines) throws IOException {
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
             Pattern pattern = Pattern.compile("\\d|[a-z]|[A-Z]");
@@ -70,9 +70,7 @@ public class MainOptimizedScanner {
         int longIndex = index / 64;
         int bitIndex = index % 64;
         bitArray[longIndex] |= (1L << bitIndex); // Set bit to 1
-
     }
-
     // Get a specific bit
     public static boolean getBit(int index) {
         int longIndex = index / 64;
