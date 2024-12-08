@@ -18,6 +18,7 @@ public class Main {
         System.out.println(startWalking(position));
         double end = System.nanoTime();
         //System.out.println();
+        printMap(position.map);
         System.out.println((end - start)  + " nano seconds or " + (end-start)/1000000 + "ms");
     }
 

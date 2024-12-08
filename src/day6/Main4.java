@@ -4,11 +4,14 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public class Main3 {
+public class Main4 {
     static int GRIDSIZE = 130;
-    static String file = "src/day6/input.txt";
+    static String file = "src/day6/input2.txt";
     static Set<point> blocks = new HashSet<>();
     static int steps = 0;
     static int startX, starty = 0;
@@ -23,11 +26,6 @@ public class Main3 {
 
         System.out.println((end - start) + " nano seconds or " + (end - start) / 1000000 + "ms");
 
-        for(var c : blocks){
-            if(c.x == startX && c.y == starty){
-                System.out.println("do -1!");
-            }
-        }
         System.out.println(blocks);
         System.out.println(blocks.size());
     }
@@ -47,23 +45,28 @@ public class Main3 {
                 break;
             }
 
-            if (step.object != '#') {
+            if (step.object == 'X') {
                 //temporary mark the position in front of you as a blockage
                 map[step.x][step.y] = '#';
                 if(isLoop(new PositionAndMap(map, currentX, currentY),direction)){
                     blocks.add(new point(step.x, step.y));
                     total++;
                 };
-                map[step.x][step.y] = '.';
+                map[step.x][step.y] = 'X';
             }
 
-            if (step.object != '#') {
+            if (step.object == 'X') {
                 currentX = step.x;
                 currentY = step.y;
             }
 
+
             if (step.object == '#') {
                 direction = changeDirection(direction);
+            }
+
+            if(step.object != 'X' && step.object != '#'){
+                System.out.println("niet op het pad. ");
             }
         }
         return total;
