@@ -4,9 +4,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public class Main3 {
+public class Main4Bruteforce {
     static int GRIDSIZE = 130;
     static String file = "src/day6/input.txt";
     static Set<String> blocks = new HashSet<>();
@@ -14,50 +17,32 @@ public class Main3 {
     public static void main(String[] args) {
         PositionAndMap position = initiateMap();
         double start = System.nanoTime();
-        System.out.println(startWalking(position));
+        startWalking(position);
         double end = System.nanoTime();
 
         System.out.println((end - start) + " nano seconds or " + (end - start) / 1000000 + "ms");
-//printMap(position.map);
-  //      System.out.println(blocks);
+
         System.out.println(blocks.size());
     }
 
-    public static int startWalking(PositionAndMap positionAndMap) {
-        int total = 0;
+    public static void startWalking(PositionAndMap positionAndMap) {
         String direction = "up";
         char[][] map = positionAndMap.map;
-        int currentX = positionAndMap.x;
-        int currentY = positionAndMap.y;
-        while (true) {
-            Step step = takeStep(direction, map, currentX, currentY);
-
-            //Guard fallen of map
-            if (step == null) {
-                System.out.println(currentX + " " + currentY + " " + direction);
-                break;
-            }
-
-            if (step.object != '#') {
-                //temporary mark the position in front of you as a blockage
-                map[step.x][step.y] = '#';
-                if(isLoop(new PositionAndMap(map, currentX, currentY),direction)){
-                    blocks.add(step.x+"."+step.y);
-                    total++;
-                };
-                map[step.x][step.y] = '.';
-            }
-
-            if (step.object != '#') {
-                currentX = step.x;
-                currentY = step.y;
-            }
-
-            if (step.object == '#') {
-                direction = changeDirection(direction);
+        for (int i = 0; i < GRIDSIZE; i++) {
+            for (int j = 0; j < GRIDSIZE; j++) {
+                char previous = '.';
+                if (map[i][j] != '^') {
+                    previous = map[i][j];
+                    map[i][j] = '#';
+                }
+                if (isLoop(new PositionAndMap(map, positionAndMap.x, positionAndMap.y), direction)) {
+                    blocks.add(i + "." + j);
+                }
+                if (map[i][j] != '^') {
+                    map[i][j] = previous;
+                }
             }
         }
-        return total;
     }
 
     public static boolean isLoop(PositionAndMap positionAndMap, String direction) {
@@ -82,11 +67,11 @@ public class Main3 {
             }
 
             if (step.object == '#') {
-                if(direction == "up") {
-                    if (passedTurns.contains(step.x+","+step.y)) {
+                if (direction == "up") {
+                    if (passedTurns.contains(step.x + "," + step.y)) {
                         return true;
                     }
-                    passedTurns.add(step.x+","+step.y);
+                    passedTurns.add(step.x + "," + step.y);
                 }
                 direction = changeDirection(direction);
             }
