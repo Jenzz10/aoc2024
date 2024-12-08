@@ -26,7 +26,7 @@ public class Main {
         long total = 0;
         BufferedReader reader;
         try {
-            reader = new BufferedReader(new FileReader("src/day7/test.txt"));
+            reader = new BufferedReader(new FileReader("src/day7/input.txt"));
             String line = reader.readLine();
 
             while (line != null) {

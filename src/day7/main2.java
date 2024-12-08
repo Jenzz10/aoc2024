@@ -50,7 +50,6 @@ public class main2 {
         if(i == remaining.size() || value > sum){
             return value == sum;
         }
-        System.out.println(value);
         return recursion(i+1, remaining, value + remaining.get(i), sum)
                 || recursion(i+1, remaining, value * remaining.get(i), sum)
                 || recursion(i+1, remaining, Long.parseLong(value +""+remaining.get(i)), sum);
