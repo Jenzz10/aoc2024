@@ -18,16 +18,14 @@ public class main2 {
 
         //System.out.println("TOTAL");
         double start = System.nanoTime();
-        antennas(position);
+        findAntennas(position);
         findAllAntiNodes();
         double end = System.nanoTime();
-        //System.out.println();
-        //printMap(position.map);
-        //System.out.println(antennas);
-        System.out.println("number of antinodes " + antinodes.size());
+        System.out.println((end - start) + " nano seconds or " + (end - start) / 1000000 + "ms");
+        //System.out.println("number of antinodes " + antinodes.size());
     }
 
-    public static void antennas(PositionAndMap positionAndMap) {
+    public static void findAntennas(PositionAndMap positionAndMap) {
 
         char[][] map = positionAndMap.map;
         for (int i = 0; i < GRIDSIZE; i++) {
@@ -55,6 +53,8 @@ public class main2 {
                 for (point q : antennas.get(c)) {
                     //same point
                     if (!q.equals(p)) {
+                        //because we are creating a cartesian product we will encounter the same combination of
+                        //points twice. So sort them in mostTopLeft en mostDownRight so the distance calculation is easier
                         point mostTopLeft = null;
                         point mostDownRight = null;
 
@@ -70,11 +70,10 @@ public class main2 {
                                 mostDownRight = p;
                             }
                         }
-                        System.out.println("compare " + mostTopLeft + " with " + mostDownRight);
                         int differenceX = mostDownRight.x - mostTopLeft.x;
                         int differenceY = mostDownRight.y - mostTopLeft.y;
 
-
+                        //such a lazy approach
                         for(int multiplier = 0; multiplier<100; multiplier++ ){
                             uniqueAntiNodesForAntenna.add(new point(mostTopLeft.x - (differenceX * multiplier), mostTopLeft.y - (differenceY * multiplier) ));
                             uniqueAntiNodesForAntenna.add(new point(mostDownRight.x + (differenceX * multiplier), mostDownRight.y + (differenceY*multiplier)));
