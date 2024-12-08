@@ -44,7 +44,6 @@ public class Main {
                 }
             }
         }
-
     }
 
     public static void findAllAntiNodes() {
@@ -55,27 +54,11 @@ public class Main {
                 for (point q : antennas.get(c)) {
                     //same point
                     if (!q.equals(p)) {
-                        point mostTopLeft = null;
-                        point mostDownRight = null;
+                        int differenceX = p.x - q.x;
+                        int differenceY = p.y - q.y;
 
-                        if (p.x < q.x) {
-                            mostTopLeft = p;
-                            mostDownRight = q;
-                        } else {
-                            if (p.x == q.x && p.y < q.y) {
-                                mostTopLeft = p;
-                                mostDownRight = q;
-                            } else {
-                                mostTopLeft = q;
-                                mostDownRight = p;
-                            }
-                        }
-                        System.out.println("compare " + mostTopLeft + " with " + mostDownRight);
-                        int differenceX = mostDownRight.x - mostTopLeft.x;
-                        int differenceY = mostDownRight.y - mostTopLeft.y;
-
-                        uniqueAntiNodesForAntenna.add(new point(mostTopLeft.x - differenceX, mostTopLeft.y - differenceY));
-                        uniqueAntiNodesForAntenna.add(new point(mostDownRight.x + differenceX, mostDownRight.y + differenceY));
+                        uniqueAntiNodesForAntenna.add(new point(q.x - differenceX, q.y - differenceY));
+                        uniqueAntiNodesForAntenna.add(new point(p.x + differenceX, p.y + differenceY));
                     }
                 }
             }
