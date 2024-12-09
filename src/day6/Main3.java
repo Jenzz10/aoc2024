@@ -31,13 +31,10 @@ public class Main3 {
         int currentY = positionAndMap.y;
         while (true) {
             Step step = takeStep(direction, map, currentX, currentY);
-
             //Guard fallen of map
             if (step == null) {
-                System.out.println(currentX + " " + currentY + " " + direction);
                 break;
             }
-
             if (step.object != '#') {
                 //temporary mark the position in front of you as a blockage
                 map[step.x][step.y] = '#';
