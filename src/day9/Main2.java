@@ -17,12 +17,10 @@ public class Main2 {
         String content = new Scanner(new File(file)).useDelimiter("\\Z").next();
         double start = System.nanoTime();
         List<String> exploded = explode(content);
-        //System.out.println(exploded);
         List<String> reorder = reformat(exploded);
         System.out.println(checksum(reorder));
         double end = System.nanoTime();
-        //System.out.println(exploded);
-
+        System.out.println((end-start) / 1000000);
         // System.out.println(reorder);
 
 
@@ -40,8 +38,6 @@ public class Main2 {
     }
 
     public static List<String> reformat(List<String> exploded) {
-        //exploded size 94592
-        //System.out.println(exploded);
         List<String> contentString = new ArrayList<>();
         for(int s = 0; s<exploded.size();s++){
             if(exploded.get(s) == "."){
