@@ -13,10 +13,11 @@ public class Main2 {
     static Set<String> blocks = new HashSet<>();
 
     public static void main(String[] args) {
-        PositionAndMap position = initiateMap();
         double start = System.nanoTime();
-        System.out.println(startWalking(position));
+        PositionAndMap position = initiateMap();
+        int answer = startWalking(position);
         double end = System.nanoTime();
+        System.out.println(answer);
         System.out.println((end - start)/1000000 + "ms");
     }
 
@@ -38,7 +39,7 @@ public class Main2 {
 
     public static int findTrailHeads(char[][] map, int x, int y, int previousElevation, String direction) {
         Step s = takeStep(direction, map, x, y);
-        if (s == null || s.object == '.') {
+        if (s == null) {
             return 0;
         }
         if (Integer.parseInt(String.valueOf(s.object)) - previousElevation != 1) {
