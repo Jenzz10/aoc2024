@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class Main {
-    static int GRIDSIZE = 41;
+    static int GRIDSIZE = 57;
     static String file = "src/day10/input.txt";
     static Set<String> uniqueTrailHeads = new HashSet<>();
 

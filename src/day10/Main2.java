@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Main2 {
-    static int GRIDSIZE = 41;
+    static int GRIDSIZE;
     static String file = "src/day10/input.txt";
     static Set<String> blocks = new HashSet<>();
 
@@ -92,13 +92,14 @@ public class Main2 {
 
     public static PositionAndMap initiateMap() {
         BufferedReader reader;
-        char[][] map = new char[GRIDSIZE][GRIDSIZE];
+        char[][] map;
         int x = 0;
         int y = 0;
         try {
             reader = new BufferedReader(new FileReader(file));
             String line = reader.readLine();
-
+            map = new char[line.length()][line.length()];
+            GRIDSIZE = line.length();
             int i = 0;
             while (line != null) {
                 map[i] = line.toCharArray();
