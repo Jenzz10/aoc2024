@@ -300,8 +300,6 @@ public class Main2 {
         } else {
             regions.get(id).add(r);
         }
-
-
     }
 
     private static void findPoints(char id, int x, int y, region r) {
@@ -317,33 +315,6 @@ public class Main2 {
         } catch (IndexOutOfBoundsException e) {
             var s = "";
         }
-
-
-    }
-
-    public static boolean isNeighbour(point p, point q) {
-        if (p.x == q.x) {
-            return (p.y + 1 == q.y || p.y - 1 == q.y);
-        }
-        if (p.y == q.y) {
-            return (p.x + 1 == q.x || p.x - 1 == q.x);
-        }
-        return false;
-    }
-
-
-    private static String changeDirection(String direction) {
-        if (direction == "up") {
-            direction = "right";
-        } else if (direction.equals("right")) {
-            direction = "down";
-        } else if (direction.equals("down")) {
-            direction = "left";
-        } else {
-            direction = "up";
-        }
-
-        return direction;
     }
 
     private static Step takeStep(String direction, char[][] map, int x, int y) {
