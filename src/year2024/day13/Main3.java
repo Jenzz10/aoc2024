@@ -9,7 +9,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main3 {
-    static String file = "src/year2024/day13/input.txt";
+    static String file = "src/year2024/day13/test.txt";
+
+    static double EXT = 0l;
 
     private static List<game> games = new ArrayList<>();
 
@@ -18,7 +20,7 @@ public class Main3 {
         findGames();
 
         for (game g : games) {
-            System.out.println(g + " " + winPrize(g));
+            //System.out.println(g + " " + winPrize(g));
             tokens += winPrize(g);
         }
 
@@ -54,7 +56,6 @@ public class Main3 {
                     if (g.x > (i * g.b.x) + (j * g.a.x) && g.y > (i * g.b.y) + (j * g.a.y)) {
                         break;
                     }
-
                     if (g.x == (i * g.b.x) + (j * g.a.x) && g.y == (i * g.b.y) + (j * g.a.y)) {
                         double tokens = (j * 3) + (i * 1);
                         if (tokens < minTokens) {
@@ -101,7 +102,7 @@ public class Main3 {
             a = Double.parseDouble(m.group());
             m.find();
             b = Double.parseDouble(m.group());
-            game game = new game(a + 10000000000000l, b + 10000000000000l, buttonA, buttonb);
+            game game = new game(a + EXT, b + EXT, buttonA, buttonb);
 
             games.add(game);
 
