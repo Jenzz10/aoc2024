@@ -2,62 +2,55 @@ package year2024.day14;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class Main {
-    /*static int TALL = 103;
-    static int WIDTH = 101;*/
-
+public class Main2 {
+    static int TALL = 103;
+    static int WIDTH = 101;
+/*
     static int TALL = 7;
-    static int WIDTH = 11;
+    static int WIDTH = 11;*/
 
 
-
-    static String file = "src/year2024/day14/test.txt";
+    static String file = "src/year2024/day14/input.txt";
     static List<Robot> robots = new ArrayList<>();
 
     static String[][] map = new String[TALL][WIDTH];
 
     public static void main(String[] args) throws IOException {
         int total = 1;
+        long start = System.currentTimeMillis();
         initiateMap();
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 500000; i++) {
             tick();
             if (findTree(i)) {
-                total = i;
-                break;
+                printMap(map, i);
             }
-            //findTree(i);
         }
-        //printMap(map, 0);
-
-        /*total *= countKwadrant(0, 0, ((TALL - 1) / 2) - 1, ((WIDTH - 1) / 2) - 1);
+        long end = System.currentTimeMillis();
+/*
+        total *= countKwadrant(0, 0, ((TALL - 1) / 2) - 1, ((WIDTH - 1) / 2) - 1);
         total *= countKwadrant(0, ((WIDTH - 1) / 2) + 1, ((TALL - 1) / 2) - 1, WIDTH);
         total *= countKwadrant(((TALL - 1) / 2) + 1, 0, TALL, ((WIDTH - 1) / 2) - 1);
-        total *= countKwadrant(((TALL - 1) / 2) + 1, ((WIDTH - 1) / 2) + 1, TALL, (WIDTH));*/
-
+        total *= countKwadrant(((TALL - 1) / 2) + 1, ((WIDTH - 1) / 2) + 1, TALL, (WIDTH));
+*/
 
         System.out.println(total);
+
+        System.out.println("Took " + (end - start) + "ms");
     }
 
     private static boolean findTree(int i) {
-
-
         try {
             for (Robot r : robots) {
-                boolean found = true;
-                for (int j = 0; j < 30; j++) {
-                    if (r.y + j >= WIDTH || map[r.x][r.y + j] == " ") {
-                        found = false;
-                        j = 32;
+                int current = 0;
+                for (Robot r2 : robots) {
+                    if (r2.x == r.x && r2.y > r.y && r2.y < (r.y + 16)) {
+                        current++;
                     }
                 }
-                if (found) {
-                    return found;
+                if (current == 15) {
+                    return true;
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -88,16 +81,6 @@ public class Main {
         int newXPosition = r.x + r.speed_x;
         int newYPosition = r.y + r.speed_y;
         try {
-            if(map[r.x][r.y] == " "){
-                boolean fuck = true;
-            }
-            int j = Integer.parseInt(map[r.x][r.y]);
-            if (j - 1 > 0) {
-                map[r.x][r.y] = "" + j;
-            } else {
-                map[r.x][r.y] = " ";
-            }
-
             if (newXPosition >= TALL) {
                 newXPosition = newXPosition - TALL;
             }
@@ -110,16 +93,8 @@ public class Main {
             if (newYPosition < 0) {
                 newYPosition = WIDTH + newYPosition;
             }
-            boolean robotOnNewPosition = map[newXPosition][newYPosition] != " ";
-
             r.x = newXPosition;
             r.y = newYPosition;
-
-            if (robotOnNewPosition) {
-                map[r.x][r.y] = "" + ((Integer.parseInt(map[r.x][r.y]) + 1));
-            } else {
-                map[r.x][r.y] = "1";
-            }
 
         } catch (IndexOutOfBoundsException e) {
 
@@ -147,9 +122,9 @@ public class Main {
             Robot r = new Robot(Integer.parseInt(positionArray[1]), Integer.parseInt(positionArray[0]), Integer.parseInt(speedArray[1]),
                     Integer.parseInt(speedArray[0]));
             robots.add(r);
-            if(map[r.x][r.y] != " "){
-                map[r.x][r.y] = "" + (Integer.parseInt(map[r.x][r.y])+1);
-            }else{
+            if (map[r.x][r.y] != " ") {
+                map[r.x][r.y] = "" + (Integer.parseInt(map[r.x][r.y]) + 1);
+            } else {
                 map[r.x][r.y] = "1";
             }
             line = reader.readLine();
@@ -158,6 +133,17 @@ public class Main {
     }
 
     public static void printMap(String[][] map, int x) throws IOException {
+        String[][] localMap = new String[TALL][WIDTH];
+        for (int i = 0; i < TALL; i++) {
+            for (int j = 0; j < WIDTH; j++) {
+                localMap[i][j] = " ";
+            }
+        }
+
+        for (Robot r : robots) {
+            localMap[r.x][r.y] = "X";
+        }
+
         FileWriter fw = new FileWriter("src/year2024/day14/trees.txt", true);
         BufferedWriter bw = new BufferedWriter(fw);
         bw.newLine();
@@ -166,17 +152,11 @@ public class Main {
         bw.newLine();
         bw.newLine();
 
+
         for (int i = 0; i < TALL; i++) {
             for (int j = 0; j < WIDTH; j++) {
-                //System.out.print(map[i][j]);
-                /*if (map[i][j] != " ") {
-                    bw.write("X");
-                } else {
-                    bw.write(" ");
-                }*/
-               bw.write(map[i][j]);
+                bw.write(localMap[i][j]);
             }
-            //System.out.print("\n");
             bw.newLine();
         }
         bw.close();
