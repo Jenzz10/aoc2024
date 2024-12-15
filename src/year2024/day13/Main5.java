@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Main3 {
+public class Main5 {
     static String file = "src/year2024/day13/test.txt";
 
     static double EXT = 0l;
@@ -31,45 +31,27 @@ public class Main3 {
 
     private static double winPrize(game g) {
 
-        double maxTimesButtonA = Math.floor(Math.min(Math.abs(g.y / g.a.y), Math.abs(g.x / g.a.x)));
-        double maxTimesButtonB = Math.floor(Math.min(Math.abs(g.x / g.b.x), Math.abs(g.y / g.b.y)));
+        double a = 0;
+        double b = 0;
 
-        double minTimesToPressToReachX = g.x / Math.max(g.a.x, g.b.x);
-        double minTimesToPressToReachY = g.y / Math.max(g.a.y, g.b.y);
+        /*
+        g.x = b* g.b.x + a* g.a.x;
+        g.y = b* g.b.y + a* g.a.y;
 
-        if (maxTimesButtonA + maxTimesButtonB < minTimesToPressToReachY || maxTimesButtonA + maxTimesButtonB < minTimesToPressToReachX) {
-            return 0;
-        }
+        g.x - a * g.a.x = b * g.b.x;
 
-        //check this
-        double startValue = Math.min(minTimesToPressToReachX, minTimesToPressToReachY);
+        (g.x / g.b.x) - ((a * g.a.x)/g.b.x) = b
 
-        double minTokens = Double.MAX_VALUE;
+         g.y = (g.x / g.b.x)  * g.b.y - (((a * g.a.x)/g.b.x) *g.b.y) + a * g.a.y
 
-        for (double i = maxTimesButtonB; i >= 0; i--) {
-            //Only continue if the rest is divisble by the number of button a.
-            if ((g.x - (i * g.b.x)) % g.a.x == 0 && (g.y - (i * g.b.y)) % g.a.y == 0) {
+         */
 
-                maxTimesButtonA = Math.floor(Math.min(((g.y - (i * g.b.y)) / g.a.y), ((g.x - (i * g.b.x)) / g.a.x)));
-                for (double j = maxTimesButtonA; j >= 0; j--) {
 
-                    if (g.x > (i * g.b.x) + (j * g.a.x) && g.y > (i * g.b.y) + (j * g.a.y)) {
-                        break;
-                    }
-                    if (g.x == (i * g.b.x) + (j * g.a.x) && g.y == (i * g.b.y) + (j * g.a.y)) {
-                        double tokens = (j * 1) + (i * 3);
-                        if (tokens < minTokens) {
-                            minTokens = tokens;
-                        }
-                    }
-                }
-            }
-        }
-        if (minTokens == Double.MAX_VALUE) {
-            return 0;
-        }
 
-        return minTokens;
+
+
+
+        return 0;
     }
 
 
@@ -102,7 +84,7 @@ public class Main3 {
             a = Double.parseDouble(m.group());
             m.find();
             b = Double.parseDouble(m.group());
-            game game = new game(a + EXT, b + EXT, buttonb, buttonA);
+            game game = new game(a + EXT, b + EXT, buttonA, buttonb);
 
             games.add(game);
 
