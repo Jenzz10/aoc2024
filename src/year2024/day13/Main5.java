@@ -3,15 +3,17 @@ package year2024.day13;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main5 {
-    static String file = "src/year2024/day13/test.txt";
+    static String file = "src/year2024/day13/input.txt";
 
-    static double EXT = 0l;
+    static double EXT = 10000000000000l;
 
     private static List<game> games = new ArrayList<>();
 
@@ -20,12 +22,12 @@ public class Main5 {
         findGames();
 
         for (game g : games) {
-            //System.out.println(g + " " + winPrize(g));
             tokens += winPrize(g);
         }
 
-        System.out.println(tokens);
-
+        //too high 100930526988697
+        System.out.printf("%f", tokens);
+        System.out.println();
 
     }
 
@@ -34,24 +36,31 @@ public class Main5 {
         double a = 0;
         double b = 0;
 
-        /*
-        g.x = b* g.b.x + a* g.a.x;
-        g.y = b* g.b.y + a* g.a.y;
+        double a1 = g.x / g.a.x; //8400/94 -> 89,362
+        double a2 = g.b.x / g.a.x * -1; // 22/94 -> 0,234
 
-        g.x - a * g.a.x = b * g.b.x;
+        double b1 = g.a.y * (a2); //-7,957 b
+        double b2 = g.a.y * (a1);
 
-        (g.x / g.b.x) - ((a * g.a.x)/g.b.x) = b
+        b = (g.y - b2) / (b1 + g.b.y);
 
-         g.y = (g.x / g.b.x)  * g.b.y - (((a * g.a.x)/g.b.x) *g.b.y) + a * g.a.y
+        b = round(b, 0);
+        //b = Math.floor(b);
+        a = (a2 * b) + a1;
+        a = round(a, 0);
 
-         */
-
-
-
-
-
-
+        if (g.x == (g.b.x * b) + (g.a.x * a) && g.y == (b * g.b.y) + (a * g.a.y)) {
+            return (a * 3) + b;
+        }
         return 0;
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 
