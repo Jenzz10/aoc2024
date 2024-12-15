@@ -20,13 +20,8 @@ public class Main {
 
 
     public static int readStones() throws IOException {
-
-
-
         int total = 0;
-
         String[] stones = input.split(" ");
-
         for (int i = 0; i < stones.length; i++) {
             total += countStones(stones[i], 25, 1, 0);
         }
