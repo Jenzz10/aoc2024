@@ -162,21 +162,6 @@ public class Main2 {
         return false;
     }
 
-
-    private static String changeDirection(String direction) {
-        if (direction == "up") {
-            direction = "right";
-        } else if (direction.equals("right")) {
-            direction = "down";
-        } else if (direction.equals("down")) {
-            direction = "left";
-        } else {
-            direction = "up";
-        }
-
-        return direction;
-    }
-
     public static void initiateMap() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String moveString = "";
