@@ -33,7 +33,6 @@ public class Main {
         if (times == i) {
             return currentTotal;
         }
-
         String removedLeadingsZeros = (Long.parseLong(stone) + "");
 
         if ("0".equals(removedLeadingsZeros)) {
