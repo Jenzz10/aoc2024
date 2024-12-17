@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Main2Optimized {
     static int GRIDSIZE = 50;
-    static String file = "src/year2024/day16/test.txt";
+    static String file = "src/year2024/day16/input.txt";
 
     static char[][] map;
     static int startX, startY, endX, endY;
@@ -16,6 +16,8 @@ public class Main2Optimized {
     static Map<String, position> unvisited = new HashMap<>();
     static Set<position> shortestPaths = new HashSet<>();
     static List<position> startPositionsToCheck = new ArrayList<>();
+    static List<position> startPositionsDoneChecking = new ArrayList<>();
+
 
     static int shortestDistance = Integer.MAX_VALUE;
 
@@ -30,39 +32,60 @@ public class Main2Optimized {
 
         shortestPaths.addAll(findShortestPath(visited.get(endX + "," + endY), new ArrayList<>()));
         //System.out.println(shortestPaths);
-        System.out.println("testing "+shortestPaths.size());
         for (position p : shortestPaths) {
-            if (p.nodes.size() > 2) {
-                for (position node : p.nodes) {
-                    if (!shortestPaths.contains(node)) {
-                        //this is a neighbour on the shortest path that is not a part of the shortestPath
-                        System.out.println(node);
-                        startPositionsToCheck.add(node);
-                    }
+            for (position node : p.nodes) {
+                if (!shortestPaths.contains(node)) {
+                    //this is a neighbour on the shortest path that is not a part of the shortestPath
+                    // System.out.println(node);
+                    startPositionsToCheck.add(node);
                 }
             }
         }
-       // printMap(shortestPaths, startPositionsToCheck);
+        System.out.println("testing " + startPositionsToCheck.size());
 
-        //findIfTheShortestPathFromACornerPosition
-        for (position p : startPositionsToCheck) {
-            resetMap(p);
-           // System.out.println("Testing " + startX + "," + startY);
-            while (!unvisited.isEmpty()) {
-                walk();
-            }
-            if (shortestDistance == visited.get(endX + "," + endY).distance) {
-                shortestPaths.addAll(findShortestPath(visited.get(endX + "," + endY), new ArrayList<>()));
-            }
-        }
+        findShortestsPathOnCrossSections();
 
-        //printMap(shortestPaths);
+        printMap(shortestPaths, startPositionsDoneChecking);
 
         double end = System.nanoTime();
-        System.out.println("number of paths on the shortest path " + shortestPaths.size());
+        System.out.println("number of paths on the shortest path " + (shortestPaths.size() + 1));
+       // printMap(shortestPaths);
         System.out.println((end - start) / 1000000 + "ms");
         System.out.println("Cost " + visited.get(endX + "," + endY).distance);
 
+    }
+
+    private static void findShortestsPathOnCrossSections() throws IOException {
+        while (!startPositionsToCheck.isEmpty()) {
+            System.out.println("Still positions to check " + startPositionsToCheck.size());
+            position p = startPositionsToCheck.getFirst();
+            if (!startPositionsDoneChecking.contains(p)) {
+               // System.out.println("testing " + p);
+                //Reset map and put this edge as a new starting point.
+                resetMap(p);
+                // System.out.println("Testing " + startX + "," + startY);
+                while (!unvisited.isEmpty()) {
+                    walk();
+                }
+                if (shortestDistance == visited.get(endX + "," + endY).distance) {
+                    System.out.println("before finding a new shortest path " + shortestPaths.size());
+                    shortestPaths.addAll(findShortestPath(visited.get(endX + "," + endY), new ArrayList<>()));
+                    for (position x : shortestPaths) {
+                        for (position node : x.nodes) {
+                            if (!shortestPaths.contains(node) && !startPositionsDoneChecking.contains(node)) {
+                                //this is a neighbour on the shortest path that is not a part of the shortestPath
+                                // System.out.println(node);
+                                startPositionsToCheck.add(node);
+                            }
+                        }
+
+                    }
+                    System.out.println("after finding a new shortest path " + shortestPaths.size());
+                }
+                startPositionsDoneChecking.add(p);
+            }
+            startPositionsToCheck.remove(p);
+        }
     }
 
     private static List<position> findShortestPath(position p, List<position> shortestPath) {
@@ -85,7 +108,7 @@ public class Main2Optimized {
                 }
             }
         }
-        shortestPaths.add(shortestNeighbour);
+        shortestPath.add(shortestNeighbour);
         return findShortestPath(shortestNeighbour, shortestPath);
     }
 
@@ -234,7 +257,7 @@ public class Main2Optimized {
     }
 
 
-    private static void printMap(Set<position> currentPath) {
+    private static void printMap(Collection<position> currentPath) {
         for (int i = 0; i < GRIDSIZE; i++) {
             for (int j = 0; j < GRIDSIZE; j++) {
                 position p = new position(i, j, 0, "");
