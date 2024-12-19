@@ -117,7 +117,7 @@ public class Main2Optimized {
         if (!unvisited.isEmpty()) {
             position p = findClosedPosition();
             if (p != null) {
-                for (String direction : Arrays.asList("right", "left", "up", "down")) {
+                for (String direction : Arrays.asList("right", "up","left","down")) {
                     String n = findNeighbour(p, direction);
                     if (n != null && !visited.containsKey(n)) {
                         position position = unvisited.get(n);
